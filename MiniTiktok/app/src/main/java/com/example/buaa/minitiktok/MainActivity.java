@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         mRv = findViewById(R.id.video_list);
         mRv.setLayoutManager(new LinearLayoutManager(this));
         mRv.setAdapter(new RecyclerView.Adapter() {
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getVideos();
-        //startActivity(new Intent(this,CustomCameraActivity.class));
+       
 
 
     }

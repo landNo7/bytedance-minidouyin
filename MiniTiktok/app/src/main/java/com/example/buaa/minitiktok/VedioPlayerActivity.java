@@ -64,14 +64,16 @@ public class VedioPlayerActivity extends AppCompatActivity {
         createPlayer();
 
         //loadVideo(getIntent().getStringExtra("videoPath"));
+        loadVideo(getVideoPath());
 
-
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
         ijkMediaPlayer.setOnVideoSizeChangedListener(new IMediaPlayer.OnVideoSizeChangedListener() {
             @Override
             public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
-
+                changeVideoSize();
             }
         });
+        ijkMediaPlayer.setLooping(true);
 
 
         playImage = findViewById(R.id.play_icon);
@@ -112,7 +114,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 ijkMediaPlayer.seekTo(seekBar.getProgress());
             }
         });
-        updateHandler.sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),500);
+        updateHandler.sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),100);
 
         String[] playSpeedName = {"0.5x","1x","1.5x","2x"};
         final float[] playSpeedValue = {0.5f,1f,1.5f,2f};
@@ -130,9 +132,8 @@ public class VedioPlayerActivity extends AppCompatActivity {
             }
         });
 
-        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
-        loadVideo(getVideoPath());
-        //loadVideo(R.raw.yuminhong);
+
+
 
     }
 
@@ -213,7 +214,6 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 }
                 seekBar.setMax((int)iMediaPlayer.getDuration());
                 seekBar.setProgress((int)iMediaPlayer.getCurrentPosition());
-                changeVideoSize();
             }
         });
 
@@ -222,8 +222,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
     }
 
     private String getVideoPath() {
-        return "https://sf1-hscdn-tos.pstatp.com/obj/developer-baas/baas/tt7217xbo2wz3cem41/94704639664995dd_1562587764205.mp4";
-//        return "android.resource://" + this.getPackageName() + "/" + resId;
+        return "https://lf3-hscdn-tos.pstatp.com/obj/developer-baas/baas/tt7217xbo2wz3cem41/d073f49ef494a574_1562587722241.mp4";
     }
 
     private void loadVideo(int id){
@@ -285,7 +284,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
         params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
         params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
         params.horizontalBias = 0.5f;
-        params.verticalBias = 0.4f;
+        params.verticalBias = 0.5f;
 
         surfaceView.setLayoutParams(params);
         Log.d(TAG, "changeVideoSize() called new width="+videoWidth+ ", new height="+videoHeight);
@@ -300,7 +299,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 case UPDATE_SEEKBAR:
                     seekBar.setMax((int)ijkMediaPlayer.getDuration());
                     seekBar.setProgress((int)ijkMediaPlayer.getCurrentPosition());
-                    sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),500);
+                    sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),100);
             }
         }
     };
