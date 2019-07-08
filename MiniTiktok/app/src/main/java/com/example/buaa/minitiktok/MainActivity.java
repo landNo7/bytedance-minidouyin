@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         getVideos();
 
-
-
     }
 
     @Override

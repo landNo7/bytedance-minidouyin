@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -30,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.buaa.minitiktok.utils.MyAnimation;
+import com.example.buaa.minitiktok.utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -93,12 +95,16 @@ public class CustomCameraActivity extends AppCompatActivity {
 
     }
 
-    private void init(){
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
 
+    private void init(){
         releaseCameraAndPreview();
         Log.d(TAG, "onCreate: camera number " + Camera.getNumberOfCameras());
         mCamera = getCamera(CAMERA_TYPE);
-
 
         mSurfaceView = findViewById(R.id.img);
         //todo 给SurfaceHolder添加Callback
@@ -118,8 +124,10 @@ public class CustomCameraActivity extends AppCompatActivity {
                 if (isRecording) {
                     //todo 停止录制
                     stopRecord();
-
-
+                    Intent intent = new Intent(CustomCameraActivity.this,UploadActivity.class);
+                    intent.putExtra("upload_type",Utils.UPLOAD_CAMERA);
+                    intent.putExtra("video_path",vedioFilePath);
+                    startActivityForResult(intent,1);
                 } else {
                     //todo 录制
                     startRecord();
@@ -173,9 +181,22 @@ public class CustomCameraActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        finish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //prepareVideoRecorder();
+        Log.d(TAG, "onStart: ");
+    }
+    
 
     private void stopRecord(){
-        //MyAnimation.faded(CustomCameraActivity.this,record,MyAnimation.PLAY_TO_PAUSE,MyAnimation.DISPARE);
+        MyAnimation.faded(CustomCameraActivity.this,record,MyAnimation.PLAY_TO_PAUSE,MyAnimation.DISPARE);
         isRecording = false;
         releaseMediaRecorder();
         scanDirAsync(CustomCameraActivity.this,new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CameraDemo"));
@@ -192,7 +213,7 @@ public class CustomCameraActivity extends AppCompatActivity {
                 releaseMediaRecorder();
                 e.printStackTrace();
             }
-           // MyAnimation.faded(CustomCameraActivity.this,record,MyAnimation.PAUSE_TO_PLAY,MyAnimation.DISPARE);
+           MyAnimation.faded(CustomCameraActivity.this,record,MyAnimation.PAUSE_TO_PLAY,MyAnimation.DISPARE);
         }
     }
 
@@ -341,24 +362,26 @@ public class CustomCameraActivity extends AppCompatActivity {
     private boolean prepareVideoRecorder() {
         //todo 准备MediaRecorder
 
-        mMediaRecorder = new MediaRecorder();
-        if(mCamera!=null)
-            mCamera.unlock();
-        else
-            mCamera = getCamera(CAMERA_TYPE);
-        mMediaRecorder.setCamera(mCamera);
+        if(mMediaRecorder==null){
+            mMediaRecorder = new MediaRecorder();
+            if(mCamera!=null)
+                mCamera.unlock();
+            else
+                mCamera = getCamera(CAMERA_TYPE);
+            mMediaRecorder.setCamera(mCamera);
 
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-        mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+            mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 
-        vedioFilePath = getOutputMediaFile(MEDIA_TYPE_VIDEO).toString();
-        mMediaRecorder.setOutputFile(vedioFilePath);
+            vedioFilePath = getOutputMediaFile(MEDIA_TYPE_VIDEO).toString();
+            mMediaRecorder.setOutputFile(vedioFilePath);
 
-        mMediaRecorder.setPreviewDisplay(mSurfaceView.getHolder().getSurface());
-        mMediaRecorder.setOrientationHint(rotationDegree);
+            mMediaRecorder.setPreviewDisplay(mSurfaceView.getHolder().getSurface());
+            mMediaRecorder.setOrientationHint(rotationDegree);
 
+        }
 
         return true;
     }
@@ -371,6 +394,7 @@ public class CustomCameraActivity extends AppCompatActivity {
             mMediaRecorder.setOnInfoListener(null);
             mMediaRecorder.setPreviewDisplay(null);
             try{
+                Log.d(TAG, "releaseMediaRecorder: "+ mMediaRecorder);
                 mMediaRecorder.stop();
                 mMediaRecorder.reset();
                 mMediaRecorder.release();

@@ -20,12 +20,15 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 
 import com.example.buaa.minitiktok.Player.RawDataSourceProvider;
 import com.example.buaa.minitiktok.utils.Like;
 import com.example.buaa.minitiktok.utils.MyClickListener;
 import com.example.buaa.minitiktok.utils.Utils;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,6 +47,8 @@ public class VedioPlayerActivity extends AppCompatActivity {
     private Like like;
     private Spinner playSpeedSpinner;
     private ImageView playImage;
+    private TextView curTimeTextview;
+    private TextView totalTimeTextView;
     private static final int UPDATE_SEEKBAR=1;
     private static final String TAG = VedioPlayerActivity.class.getSimpleName();
 
@@ -98,6 +103,9 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 //Toast.makeText(VedioPlayerActivity.this,"双击或多击事件",Toast.LENGTH_SHORT).show();
             }
         }));
+
+        curTimeTextview = findViewById(R.id.cur_time);
+        totalTimeTextView = findViewById(R.id.total_time);
 
         seekBar = findViewById(R.id.seekbar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -214,6 +222,8 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 }
                 seekBar.setMax((int)iMediaPlayer.getDuration());
                 seekBar.setProgress((int)iMediaPlayer.getCurrentPosition());
+                updateTextViewWithTimeFormat(curTimeTextview,(int)ijkMediaPlayer.getCurrentPosition()/1000);
+                updateTextViewWithTimeFormat(totalTimeTextView,(int)ijkMediaPlayer.getDuration()/1000);
             }
         });
 
@@ -299,8 +309,24 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 case UPDATE_SEEKBAR:
                     seekBar.setMax((int)ijkMediaPlayer.getDuration());
                     seekBar.setProgress((int)ijkMediaPlayer.getCurrentPosition());
+                    updateTextViewWithTimeFormat(curTimeTextview,(int)ijkMediaPlayer.getCurrentPosition()/1000);
+                    updateTextViewWithTimeFormat(totalTimeTextView,(int)ijkMediaPlayer.getDuration()/1000);
                     sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),100);
             }
         }
     };
+
+    private void updateTextViewWithTimeFormat(TextView textView, int second) {
+
+        int hh = second / 3600;
+        int mm = second % 3600 / 60;
+        int ss = second % 60;
+        String stringTemp;
+        if (0 != hh) {
+            stringTemp = String.format("%02d:%02d:%02d", hh, mm, ss);
+        } else {
+            stringTemp = String.format("%02d:%02d", mm, ss);
+        }
+        textView.setText(stringTemp);
+    }
 }
