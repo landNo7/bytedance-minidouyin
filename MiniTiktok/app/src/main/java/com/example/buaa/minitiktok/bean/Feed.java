@@ -1,5 +1,7 @@
 package com.example.buaa.minitiktok.bean;
 
+import java.util.Date;
+
 /**
  * @author Xavier.S
  * @date 2019.01.20 14:18
@@ -15,28 +17,46 @@ public class Feed {
 
     private String video_url;
 
+    private String updatedAt;
+
+
     public void setStudent_id(String student_id){
         this.student_id = student_id;
     }
+
     public String getStudent_id(){
         return this.student_id;
     }
+
     public void setUser_name(String user_name){
         this.user_name = user_name;
     }
+
     public String getUser_name(){
         return this.user_name;
     }
+
     public void setImage_url(String image_url){
         this.image_url = image_url;
     }
+
     public String getImage_url(){
         return this.image_url;
     }
+
     public void setVideo_url(String video_url){
         this.video_url = video_url;
     }
+
     public String getVideo_url(){
         return this.video_url;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.buaa.minitiktok.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 public class FeedResponse {
 
     // TODO-C2 (2) Implement your FeedResponse Bean here according to the response json
-    private List<Feed> feeds;
+    private List<Feed> feeds = new ArrayList<>();
 
     private boolean success;
 
