@@ -25,6 +25,7 @@ import android.widget.SpinnerAdapter;
 import com.example.buaa.minitiktok.Player.RawDataSourceProvider;
 import com.example.buaa.minitiktok.utils.Like;
 import com.example.buaa.minitiktok.utils.MyClickListener;
+import com.example.buaa.minitiktok.utils.Utils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,12 +58,13 @@ public class VedioPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vedio_player);
         Log.d(TAG, "onCreate: ");
 
+        Utils.hideTitle(getActionBar());
+
         surfaceView = findViewById(R.id.ijkPlayer);
         createPlayer();
 
         //loadVideo(getIntent().getStringExtra("videoPath"));
-        //loadVideo(getVideoPath());
-        loadVideo(R.raw.yuminhong);
+
 
         ijkMediaPlayer.setOnVideoSizeChangedListener(new IMediaPlayer.OnVideoSizeChangedListener() {
             @Override
@@ -70,6 +72,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
 
             }
         });
+
 
         playImage = findViewById(R.id.play_icon);
         playImage.setAlpha(0.5f);
@@ -127,6 +130,9 @@ public class VedioPlayerActivity extends AppCompatActivity {
             }
         });
 
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
+        loadVideo(getVideoPath());
+        //loadVideo(R.raw.yuminhong);
 
     }
 
@@ -216,7 +222,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
     }
 
     private String getVideoPath() {
-        return "http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
+        return "https://sf1-hscdn-tos.pstatp.com/obj/developer-baas/baas/tt7217xbo2wz3cem41/94704639664995dd_1562587764205.mp4";
 //        return "android.resource://" + this.getPackageName() + "/" + resId;
     }
 
