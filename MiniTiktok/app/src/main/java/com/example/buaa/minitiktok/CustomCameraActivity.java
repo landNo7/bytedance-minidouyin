@@ -153,7 +153,7 @@ public class CustomCameraActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.btn_zoom).setOnClickListener(new View.OnClickListener() {
+        mSurfaceView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCamera.autoFocus(autoFocusCallback);
@@ -175,7 +175,7 @@ public class CustomCameraActivity extends AppCompatActivity {
                     }
                 }
                 else{
-                    Toast.makeText(CustomCameraActivity.this, "不支持调焦", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(CustomCameraActivity.this, "不支持调焦", Toast.LENGTH_SHORT).show();
                 }
             }
         });
