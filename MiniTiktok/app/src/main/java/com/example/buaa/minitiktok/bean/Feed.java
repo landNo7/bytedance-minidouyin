@@ -1,5 +1,7 @@
 package com.example.buaa.minitiktok.bean;
 
+import android.util.Log;
+
 import java.util.Date;
 
 /**
@@ -57,6 +59,15 @@ public class Feed {
     }
 
     public String getUpdatedAt() {
-        return updatedAt;
+        try {
+            String[] date;
+            date = updatedAt.split("\\.");
+            Log.d("feeddate", "getUpdatedAt: "+date[0]);
+            return date[0];
+        } catch (Exception e) {
+            Log.d("feeddate", "getUpdatedAt: catch");
+            return updatedAt;
+        }
+        //return updatedAt;
     }
 }

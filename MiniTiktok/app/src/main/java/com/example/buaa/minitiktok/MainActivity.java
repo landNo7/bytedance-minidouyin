@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,10 @@ import com.bumptech.glide.Glide;
 import com.example.buaa.minitiktok.bean.Feed;
 import com.example.buaa.minitiktok.bean.FeedResponse;
 import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
+import com.example.buaa.minitiktok.utils.RecycleViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private RecyclerView mRv;
     private FeedResponse feedResponse;
+    private List<Feed> feedList_left = new ArrayList<>();
+    private List<Feed> feedList_right = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,29 +63,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mRv = findViewById(R.id.video_list);
-        mRv.setLayoutManager(new LinearLayoutManager(this));
-        mRv.setAdapter(new RecyclerView.Adapter() {
-            @NonNull
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                ImageView imageView = new ImageView(viewGroup.getContext());
-                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                imageView.setAdjustViewBounds(true);
-                return new MyViewHolder(imageView);
-            }
+        mRv.setLayoutManager(new GridLayoutManager(this,2));
+        mRv.setAdapter(new RecycleViewAdapter(feedResponse.getFeeds()));
 
+        ((RecycleViewAdapter) mRv.getAdapter()).setOnItemClickListener(new RecycleViewAdapter.OnItemClickListener() {
             @Override
-            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                ImageView iv = (ImageView) viewHolder.itemView;
-                String url = feedResponse.getFeeds().get(i).getImage_url();
-                Glide.with(iv.getContext()).load(url).into(iv);
-            }
-
-            @Override
-            public int getItemCount() {
-                return feedResponse.getFeeds().size();
+            public void onClick(int position) {
+                Intent intent = new Intent(MainActivity.this,VedioPlayerActivity.class);
+                intent.putExtra("video_url",feedResponse.getFeeds().get(position).getVideo_url());
+                startActivity(intent);
             }
         });
 
@@ -110,12 +104,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public MyViewHolder(@NonNull View itemView) {
-            super(itemView);
-        }
-    }
-
     public void getVideos() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://test.androidcamp.bytedance.com/")
@@ -138,9 +126,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void loadVideos(FeedResponse mfeedResponse) {
-        feedResponse = mfeedResponse;
-        mRv.getAdapter().notifyDataSetChanged();
+    public void loadVideos(FeedResponse FeedResponse) {
+        feedResponse = FeedResponse;
+        ((RecycleViewAdapter) mRv.getAdapter()).updateFeeds(feedResponse.getFeeds());
+        ((RecycleViewAdapter) mRv.getAdapter()).notifyDataSetChanged();
+        /*UpdateFeedList();
+        ((RecycleViewAdapter) mRv_left.getAdapter()).updateFeeds(feedList_left);
+        ((RecycleViewAdapter) mRv_left.getAdapter()).notifyDataSetChanged();
+        ((RecycleViewAdapter) mRv_right.getAdapter()).updateFeeds(feedList_right);
+        ((RecycleViewAdapter) mRv_right.getAdapter()).notifyDataSetChanged();*/
     }
 
+    public void UpdateFeedList() {
+
+        feedList_left.clear();
+        feedList_right.clear();
+        for (int i = 0;i < feedResponse.getFeeds().size();i++) {
+            if (i % 2 == 0) {
+                feedList_left.add(feedResponse.getFeeds().get(i));
+            } else
+                feedList_right.add(feedResponse.getFeeds().get(i));
+        }
+    }
 }

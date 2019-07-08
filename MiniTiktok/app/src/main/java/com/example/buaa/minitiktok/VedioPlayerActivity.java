@@ -64,7 +64,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
         createPlayer();
 
         //loadVideo(getIntent().getStringExtra("videoPath"));
-        loadVideo(getVideoPath());
+        loadVideo(getIntent().getStringExtra("video_url"));
 
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
         ijkMediaPlayer.setOnVideoSizeChangedListener(new IMediaPlayer.OnVideoSizeChangedListener() {
