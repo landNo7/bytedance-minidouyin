@@ -1,5 +1,6 @@
 package com.example.buaa.minitiktok;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.buaa.minitiktok.bean.Feed;
 import com.example.buaa.minitiktok.bean.FeedResponse;
 import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
 
@@ -25,6 +27,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import static com.example.buaa.minitiktok.utils.Utils.hideTitle;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,9 +40,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        hideTitle(getActionBar());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        feedResponse = new FeedResponse();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getVideos();
+        //startActivity(new Intent(this,CustomCameraActivity.class));
+
     }
 
     @Override
@@ -126,7 +134,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void loadVideos(FeedResponse feedResponse) {
+    public void loadVideos(FeedResponse mfeedResponse) {
+        feedResponse = mfeedResponse;
         mRv.getAdapter().notifyDataSetChanged();
     }
+
 }
