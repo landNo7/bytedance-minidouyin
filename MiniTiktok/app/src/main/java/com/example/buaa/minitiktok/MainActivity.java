@@ -1,31 +1,23 @@
 package com.example.buaa.minitiktok;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.buaa.minitiktok.bean.Feed;
 import com.example.buaa.minitiktok.bean.FeedResponse;
 import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
 import com.example.buaa.minitiktok.utils.RecycleViewAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,16 +27,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.HEAD;
 
 import static com.example.buaa.minitiktok.utils.Utils.hideTitle;
-
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 public class MainActivity extends AppCompatActivity {
 
+    private com.getbase.floatingactionbutton.FloatingActionButton fab_upload;
+    private com.getbase.floatingactionbutton.FloatingActionButton fab_camera;
+    private FloatingActionsMenu floatingActionsMenu;
     private static final String TAG = "MainActivity";
     private RecyclerView mRv;
     private FeedResponse feedResponse;
-    private List<Feed> feedList_left = new ArrayList<>();
-    private List<Feed> feedList_right = new ArrayList<>();
-
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private static final int REFRESH_COMPLETE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,18 +48,21 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         feedResponse = new FeedResponse();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        //init RecycleLayout
         mRv = findViewById(R.id.video_list);
         mRv.setLayoutManager(new GridLayoutManager(this,2));
         mRv.setAdapter(new RecycleViewAdapter(feedResponse.getFeeds()));
+        //下拉监听
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getVideos();
+                Toast.makeText(MainActivity.this,"refresh success",Toast.LENGTH_SHORT).show();
+                mHandler.sendEmptyMessageDelayed(REFRESH_COMPLETE,500);
+            }
+        });
+        getVideos();
 
         ((RecycleViewAdapter) mRv.getAdapter()).setOnItemClickListener(new RecycleViewAdapter.OnItemClickListener() {
             @Override
@@ -77,6 +74,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getVideos();
+        floatingActionsMenu = findViewById(R.id.fab_menu);
+        fab_upload = findViewById(R.id.fab_upload);
+        fab_camera = findViewById(R.id.fab_camera);
+        fab_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"camera",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,CustomCameraActivity.class);
+                startActivity(intent);
+            }
+        });
+        fab_upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"upload",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,UploadActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -128,22 +144,16 @@ public class MainActivity extends AppCompatActivity {
         feedResponse = FeedResponse;
         ((RecycleViewAdapter) mRv.getAdapter()).updateFeeds(feedResponse.getFeeds());
         ((RecycleViewAdapter) mRv.getAdapter()).notifyDataSetChanged();
-        /*UpdateFeedList();
-        ((RecycleViewAdapter) mRv_left.getAdapter()).updateFeeds(feedList_left);
-        ((RecycleViewAdapter) mRv_left.getAdapter()).notifyDataSetChanged();
-        ((RecycleViewAdapter) mRv_right.getAdapter()).updateFeeds(feedList_right);
-        ((RecycleViewAdapter) mRv_right.getAdapter()).notifyDataSetChanged();*/
     }
 
-    public void UpdateFeedList() {
-
-        feedList_left.clear();
-        feedList_right.clear();
-        for (int i = 0;i < feedResponse.getFeeds().size();i++) {
-            if (i % 2 == 0) {
-                feedList_left.add(feedResponse.getFeeds().get(i));
-            } else
-                feedList_right.add(feedResponse.getFeeds().get(i));
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case REFRESH_COMPLETE:
+                    swipeRefreshLayout.setRefreshing(false);
+                    break;
+            }
         }
-    }
+    };
 }
