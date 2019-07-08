@@ -3,6 +3,7 @@ package com.example.buaa.minitiktok;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -193,14 +196,16 @@ public class CustomCameraActivity extends AppCompatActivity {
         //prepareVideoRecorder();
         Log.d(TAG, "onStart: ");
     }
-    
 
     private void stopRecord(){
+        Log.d(TAG, "stopRecord: step1");
         MyAnimation.faded(CustomCameraActivity.this,record,MyAnimation.PLAY_TO_PAUSE,MyAnimation.DISPARE);
         isRecording = false;
+        Log.d(TAG, "stopRecord: step2");
         releaseMediaRecorder();
-        scanDirAsync(CustomCameraActivity.this,new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CameraDemo"));
-
+        Log.d(TAG, "stopRecord: step3");
+        scanDirAsync(CustomCameraActivity.this,new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Mini Tiktok"));
+        Log.d(TAG, "stopRecord: step4");
     }
 
     private void startRecord(){
@@ -248,11 +253,8 @@ public class CustomCameraActivity extends AppCompatActivity {
                         Log.d(TAG, "scanDirAsync: finished with path = " + path + ", uri = " + uri.toString());
                     }
                 });
-                Toast.makeText(ctx, paths[0], Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ctx, paths[0], Toast.LENGTH_SHORT).show();
             }
-            Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
-            scanIntent.setData(FileProvider.getUriForFile(this,"com.bytedance.camera.demo",dir));
-            ctx.sendBroadcast(scanIntent);
 
             Log.d(TAG, "scanDirAsync() called with: ctx = [" + ctx + "], dir = [" + dir.getAbsolutePath()+ "]");
         }

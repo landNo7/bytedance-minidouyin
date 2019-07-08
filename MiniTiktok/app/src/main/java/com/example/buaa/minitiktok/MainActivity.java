@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"camera",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,"camera",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this,CustomCameraActivity.class);
                 startActivity(intent);
             }
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         fab_upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"upload",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,"upload",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this,UploadActivity.class);
                 startActivity(intent);
             }
