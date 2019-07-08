@@ -1,15 +1,36 @@
 package com.example.buaa.minitiktok;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.example.buaa.minitiktok.bean.FeedResponse;
+import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private RecyclerView mRv;
+    private FeedResponse feedResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +47,33 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        mRv = findViewById(R.id.video_list);
+        mRv.setLayoutManager(new LinearLayoutManager(this));
+        mRv.setAdapter(new RecyclerView.Adapter() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                ImageView imageView = new ImageView(viewGroup.getContext());
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                imageView.setAdjustViewBounds(true);
+                return new MyViewHolder(imageView);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                ImageView iv = (ImageView) viewHolder.itemView;
+                String url = feedResponse.getFeeds().get(i).getImage_url();
+                Glide.with(iv.getContext()).load(url).into(iv);
+            }
+
+            @Override
+            public int getItemCount() {
+                return feedResponse.getFeeds().size();
+            }
+        });
+
+        getVideos();
     }
 
     @Override
@@ -48,5 +96,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
+    public void getVideos() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://test.androidcamp.bytedance.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Call<FeedResponse> call = retrofit.create(IMiniDouyinService.class).getFeeds();
+        call.enqueue(new Callback<FeedResponse>() {
+            @Override
+            public void onResponse(Call<FeedResponse> call, Response<FeedResponse> response) {
+                loadVideos(response.body());
+                Log.d(TAG, "onResponse: ");
+            }
+
+            @Override
+            public void onFailure(Call<FeedResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onFailure: ");
+            }
+        });
+    }
+
+    public void loadVideos(FeedResponse feedResponse) {
+        mRv.getAdapter().notifyDataSetChanged();
     }
 }
