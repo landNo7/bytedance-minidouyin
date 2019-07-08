@@ -32,14 +32,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.HEAD;
+
 import static com.example.buaa.minitiktok.utils.Utils.hideTitle;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private RecyclerView mRv_left;
-    private RecyclerView mRv_right;
     private RecyclerView mRv;
     private FeedResponse feedResponse;
     private List<Feed> feedList_left = new ArrayList<>();
@@ -63,14 +63,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*mRv_left = findViewById(R.id.video_list);
-        mRv_left.setLayoutManager(new LinearLayoutManager(this));
-        mRv_left.setAdapter(new RecycleViewAdapter(feedList_left));
-
-        mRv_right = findViewById(R.id.video_list1);
-        mRv_right.setLayoutManager(new LinearLayoutManager(this));
-        mRv_right.setAdapter(new RecycleViewAdapter(feedList_right));*/
-
         mRv = findViewById(R.id.video_list);
         mRv.setLayoutManager(new GridLayoutManager(this,2));
         mRv.setAdapter(new RecycleViewAdapter(feedResponse.getFeeds()));
@@ -78,12 +70,15 @@ public class MainActivity extends AppCompatActivity {
         ((RecycleViewAdapter) mRv.getAdapter()).setOnItemClickListener(new RecycleViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                Toast.makeText(MainActivity.this, "click " + position, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,VedioPlayerActivity.class);
+                intent.putExtra("video_url",feedResponse.getFeeds().get(position).getVideo_url());
+                startActivity(intent);
             }
         });
 
         getVideos();
-        //startActivity(new Intent(this,CustomCameraActivity.class));
+       
+
 
     }
 

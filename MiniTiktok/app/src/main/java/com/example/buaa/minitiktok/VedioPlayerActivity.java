@@ -25,6 +25,7 @@ import android.widget.SpinnerAdapter;
 import com.example.buaa.minitiktok.Player.RawDataSourceProvider;
 import com.example.buaa.minitiktok.utils.Like;
 import com.example.buaa.minitiktok.utils.MyClickListener;
+import com.example.buaa.minitiktok.utils.Utils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,19 +58,23 @@ public class VedioPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vedio_player);
         Log.d(TAG, "onCreate: ");
 
+        Utils.hideTitle(getActionBar());
+
         surfaceView = findViewById(R.id.ijkPlayer);
         createPlayer();
 
         //loadVideo(getIntent().getStringExtra("videoPath"));
-        //loadVideo(getVideoPath());
-        loadVideo(R.raw.yuminhong);
+        loadVideo(getIntent().getStringExtra("video_url"));
 
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
         ijkMediaPlayer.setOnVideoSizeChangedListener(new IMediaPlayer.OnVideoSizeChangedListener() {
             @Override
             public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
-
+                changeVideoSize();
             }
         });
+        ijkMediaPlayer.setLooping(true);
+
 
         playImage = findViewById(R.id.play_icon);
         playImage.setAlpha(0.5f);
@@ -109,7 +114,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 ijkMediaPlayer.seekTo(seekBar.getProgress());
             }
         });
-        updateHandler.sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),500);
+        updateHandler.sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),100);
 
         String[] playSpeedName = {"0.5x","1x","1.5x","2x"};
         final float[] playSpeedValue = {0.5f,1f,1.5f,2f};
@@ -126,6 +131,8 @@ public class VedioPlayerActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+
 
 
     }
@@ -207,7 +214,6 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 }
                 seekBar.setMax((int)iMediaPlayer.getDuration());
                 seekBar.setProgress((int)iMediaPlayer.getCurrentPosition());
-                changeVideoSize();
             }
         });
 
@@ -216,8 +222,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
     }
 
     private String getVideoPath() {
-        return "http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
-//        return "android.resource://" + this.getPackageName() + "/" + resId;
+        return "https://lf3-hscdn-tos.pstatp.com/obj/developer-baas/baas/tt7217xbo2wz3cem41/d073f49ef494a574_1562587722241.mp4";
     }
 
     private void loadVideo(int id){
@@ -279,7 +284,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
         params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
         params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
         params.horizontalBias = 0.5f;
-        params.verticalBias = 0.4f;
+        params.verticalBias = 0.5f;
 
         surfaceView.setLayoutParams(params);
         Log.d(TAG, "changeVideoSize() called new width="+videoWidth+ ", new height="+videoHeight);
@@ -294,7 +299,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 case UPDATE_SEEKBAR:
                     seekBar.setMax((int)ijkMediaPlayer.getDuration());
                     seekBar.setProgress((int)ijkMediaPlayer.getCurrentPosition());
-                    sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),500);
+                    sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),100);
             }
         }
     };
