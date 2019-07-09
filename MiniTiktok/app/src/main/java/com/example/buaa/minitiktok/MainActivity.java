@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.buaa.minitiktok.bean.FeedResponse;
 import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
+import com.example.buaa.minitiktok.utils.NetworkUtils;
 import com.example.buaa.minitiktok.utils.RecycleViewAdapter;
 
 import retrofit2.Call;
