@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.buaa.minitiktok.bean.Feed;
 import com.example.buaa.minitiktok.bean.FeedResponse;
 import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
 import com.example.buaa.minitiktok.utils.NetworkUtils;
@@ -29,6 +30,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.buaa.minitiktok.utils.Utils.hideTitle;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -162,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     public void loadVideos(FeedResponse FeedResponse) {
         loading.setVisibility(View.GONE);
         feedResponse = FeedResponse;
+        getLimit();
         ((RecycleViewAdapter) mRv.getAdapter()).updateFeeds(feedResponse.getFeeds());
         ((RecycleViewAdapter) mRv.getAdapter()).notifyDataSetChanged();
     }
@@ -176,4 +181,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void getLimit() {
+        if (feedResponse.getFeeds().size() > 9) {
+            List<Feed> mFeeds = new ArrayList<>();
+            for (int i = 0;i <= 9;i++){
+                mFeeds.add(feedResponse.getFeeds().get(i));
+            }
+            feedResponse.setFeeds(mFeeds);
+        }
+    }
 }

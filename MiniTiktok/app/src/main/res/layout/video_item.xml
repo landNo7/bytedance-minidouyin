@@ -7,13 +7,14 @@
     android:background="@drawable/shape_round"
     android:orientation="vertical"
     android:elevation="3dp">
+
     <ImageView
+        android:padding="1dp"
         android:id="@+id/video_image"
         android:layout_width="match_parent"
         android:layout_height="120dp"
 
-        android:src="@drawable/ic_launcher_foreground"
-        />
+        android:src="@drawable/ic_launcher_foreground" />
 
     <TextView
         android:id="@+id/author_name"
