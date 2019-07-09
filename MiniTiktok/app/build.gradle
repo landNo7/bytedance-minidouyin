@@ -21,6 +21,12 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
 }
 
 
@@ -43,4 +49,5 @@ dependencies {
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'net.qiujuer.genius:blur:2.0.0'
 }

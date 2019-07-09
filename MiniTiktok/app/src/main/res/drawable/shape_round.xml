@@ -7,7 +7,7 @@
 
     <!-- 边框的颜色和粗细 -->
     <stroke
-        android:width="0.5dp"
+        android:width="0dp"
         />
 
     <!-- android:radius 圆角的半径 -->
