@@ -122,7 +122,7 @@ public class VedioPlayerActivity extends AppCompatActivity {
                 ijkMediaPlayer.seekTo(seekBar.getProgress());
             }
         });
-        updateHandler.sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),100);
+        updateHandler.sendMessageDelayed(Message.obtain(updateHandler,UPDATE_SEEKBAR),200);
 
         String[] playSpeedName = {"0.5x","1x","1.5x","2x"};
         final float[] playSpeedValue = {0.5f,1f,1.5f,2f};
@@ -155,6 +155,8 @@ public class VedioPlayerActivity extends AppCompatActivity {
             ijkMediaPlayer.setDisplay(null);
             ijkMediaPlayer.release();
         }
+        updateHandler.removeCallbacksAndMessages(0);
+        updateHandler = null;
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
