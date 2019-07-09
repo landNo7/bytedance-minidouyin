@@ -2,6 +2,9 @@ package com.example.buaa.minitiktok;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -30,6 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.buaa.minitiktok.utils.Utils.hideTitle;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import net.qiujuer.genius.blur.StackBlur;
+
 public class MainActivity extends AppCompatActivity {
 
     private com.getbase.floatingactionbutton.FloatingActionButton fab_upload;
@@ -47,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        hideTitle(getActionBar());
 
         loading = findViewById(R.id.loading);
         face_image = findViewById(R.id.face_image);
@@ -58,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
                 face_image.setVisibility(View.GONE);
             }
         },2000);
+
+        final Bitmap tmp = BitmapFactory.decodeResource(getResources(), R.drawable.background1);
+        Bitmap tmp1 = StackBlur.blur(tmp, (int) 200,false);
+
+        ((ImageView)findViewById(R.id.background)).setImageDrawable(new BitmapDrawable(getResources(),tmp1));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -154,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onFailure(Call<FeedResponse> call, Throwable t) {
                     Toast.makeText(MainActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onFailure: ");
+                    loading.setVisibility(View.GONE);
                 }
             });
         }
