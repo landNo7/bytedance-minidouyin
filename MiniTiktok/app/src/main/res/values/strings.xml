@@ -5,5 +5,6 @@
     <string name="select_a_video">select a video</string>
     <string name="post_it">post it!</string>
     <string name="success">posted</string>
+    <string name="Limit">Limit Video</string>
 
 </resources>

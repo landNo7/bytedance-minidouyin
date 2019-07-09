@@ -37,6 +37,7 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".UploadActivity"></activity>
+        <activity android:name=".ItemLimit.Itemlimit"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.bytedance.miniDouying"

@@ -1,5 +1,6 @@
 package com.example.buaa.minitiktok.utils;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,12 +17,23 @@ import java.util.List;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ItemHolder> {
 
+    public interface TextViewClickListener {
+        void onClick(int position);
+    }
+
+    private TextViewClickListener name_listener;
+
+    public void setTextViewClickListener(TextViewClickListener listener) {
+        this.name_listener = listener;
+    }
+
     //第一步 定义接口
     public interface OnItemClickListener {
         void onClick(int position);
     }
 
     private OnItemClickListener listener;
+
 
     //第二步， 写一个公共的方法
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -52,21 +64,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, final int position) {
         //设置Video封面
-        ImageView iv = holder.image;
-        String url = mItems.get(position).getImage_url();
-        Glide.with(iv.getContext()).load(url).into(iv);
-        //设置Video作者
-        holder.author_name.setText(mItems.get(position).getUser_name());
-        holder.date.setText(mItems.get(position).getUpdatedAt());
-        //点击封面播放视频
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onClick(position);
-                }
-            }
-        });
+        holder.bind(mItems.get(position),position);
+
     }
 
     public void updateFeeds(List<Feed> feeds) {
@@ -76,7 +75,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     @NonNull
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.video_item, parent, false));
+        return new ItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.video_item, parent,false));
     }
 
     class ItemHolder extends RecyclerView.ViewHolder {
@@ -92,6 +91,23 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             date = item.findViewById(R.id.text_date);
         }
 
+        public void bind(final Feed feed,final int position) {
+            String url = feed.getImage_url();
+            Glide.with(image.getContext()).load(url).into(image);
+            //设置Video作者
+            author_name.setText(feed.getUser_name());
+            date.setText(feed.getUpdatedAt());
+            //点击封面播放视频
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onClick(position);
+                    }
+                }
+            });
+
+        }
     }
 
 }

@@ -1,12 +1,14 @@
 package com.example.buaa.minitiktok.ItemLimit;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -28,58 +30,38 @@ public class Itemlimit extends AppCompatActivity {
 
     private static int REQUEST_CODE_STORAGE_PERMISSION = 1001;
     private static final String fileName = "test.txt";
-
+    private static String limit = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*setContentView(R.layout.activity_debug);
-        setTitle(R.string.action_debug);
+        setContentView(R.layout.activity_itemlimit);
 
-        final Button printBtn = findViewById(R.id.btn_print_path);
-        final TextView pathText = findViewById(R.id.text_path);
-        printBtn.setOnClickListener(new View.OnClickListener() {
+        setTitle(R.string.Limit);
+        final Button limitBtn = findViewById(R.id.btn_add);
+        final TextView limitText = findViewById(R.id.edit_text);
+        limitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("===== Internal Private =====\n").append(getInternalPath())
-                        .append("===== External Private =====\n").append(getExternalPrivatePath())
-                        .append("===== External Public =====\n").append(getExternalPublicPath());
-                pathText.setText(sb);
-            }
-        });
-
-        final Button permissionBtn = findViewById(R.id.btn_request_permission);
-        permissionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int state = ActivityCompat.checkSelfPermission(DebugActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (state == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(DebugActivity.this, "already granted",
-                            Toast.LENGTH_SHORT).show();
+                CharSequence content = limitText.getText();
+                if (TextUtils.isEmpty(content)) {
+                    Toast.makeText(Itemlimit.this,
+                            "No content to limit", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                ActivityCompat.requestPermissions(DebugActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        REQUEST_CODE_STORAGE_PERMISSION);
+                boolean succeed = Limit_Video(content.toString().trim());
+                if (succeed) {
+                    Toast.makeText(Itemlimit.this,
+                            "Note added", Toast.LENGTH_SHORT).show();
+                    limit = ReadFile();
+                    setResult(Activity.RESULT_OK);
+                } else {
+                    Toast.makeText(Itemlimit.this,
+                            "Error", Toast.LENGTH_SHORT).show();
+                }
+                finish();
             }
         });
 
-        final Button fileWriteBtn = findViewById(R.id.btn_write_files);
-        final TextView fileText = findViewById(R.id.text_files);
-        fileWriteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO 把一段文本写入某个存储区的文件中，再读出来，显示在 fileText 上
-                File fileDire = getFilesDir();
-                String sb =
-                        "===== Internal Private =====\n" + getInternalPath() +
-                                "===== External Private =====\n" + getExternalPrivatePath() +
-                                "===== External Public =====\n" + getExternalPublicPath();
-                WriteFile(sb);
-                fileText.setText(ReadFile());
-            }
-        });*/
     }
 
     public String ReadFile() {
@@ -97,15 +79,17 @@ public class Itemlimit extends AppCompatActivity {
         return read;
     }
 
-    public void WriteFile(String content) {
+    public boolean WriteFile(String content) {
         try {
 
             FileOutputStream writefile = this.openFileOutput(fileName, MODE_PRIVATE);//获得FileOutputStream
             byte[]  bytes = content.getBytes();
             writefile.write(bytes);//将byte数组写入文件
             writefile.close();//关闭文件输出流
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -177,5 +161,13 @@ public class Itemlimit extends AppCompatActivity {
             e.printStackTrace();
         }
         return sb.toString();
+    }
+
+    public boolean Limit_Video(String limiticontent) {
+        return WriteFile(limiticontent);
+    }
+
+    public static String getLimitString() {
+        return limit;
     }
 }

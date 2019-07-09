@@ -1,12 +1,14 @@
 package com.example.buaa.minitiktok;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.buaa.minitiktok.ItemLimit.Itemlimit;
 import com.example.buaa.minitiktok.bean.Feed;
 import com.example.buaa.minitiktok.bean.FeedResponse;
 import com.example.buaa.minitiktok.newtork.IMiniDouyinService;
@@ -102,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        getVideos();
         floatingActionsMenu = findViewById(R.id.fab_menu);
         fab_upload = findViewById(R.id.fab_upload);
         fab_camera = findViewById(R.id.fab_camera);
@@ -141,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivityForResult(new Intent(MainActivity.this, Itemlimit.class)
+                    ,REQUEST_CODE_LIMIT);
             return true;
         }
 
@@ -193,12 +197,28 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void getLimit() {
-        if (feedResponse.getFeeds().size() > 9) {
+        String limit = null;
+        limit = Itemlimit.getLimitString();
+        if (limit != null) {
             List<Feed> mFeeds = new ArrayList<>();
-            for (int i = 0;i <= 9;i++){
+            for (int i = 0; i < feedResponse.getFeeds().size(); i++) {
+                if (feedResponse.getFeeds().get(i).getUser_name().equals(limit))
+                    continue;
                 mFeeds.add(feedResponse.getFeeds().get(i));
             }
             feedResponse.setFeeds(mFeeds);
+        }
+
+    }
+
+    private static final int REQUEST_CODE_LIMIT = 1001;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_LIMIT
+                && resultCode == Activity.RESULT_OK) {
+            getVideos();
+            Toast.makeText(MainActivity.this,"limit success",Toast.LENGTH_SHORT).show();
         }
     }
 }
