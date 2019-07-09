@@ -197,12 +197,24 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void getLimit() {
-        String limit = null;
-        limit = Itemlimit.getLimitString();
-        if (limit != null) {
+        String ignored,name = null;
+        ignored = Itemlimit.getIgnored();
+        name = Itemlimit.getName();
+        if (name != null) {
+            Log.d(TAG, "getLimit: only you");
             List<Feed> mFeeds = new ArrayList<>();
             for (int i = 0; i < feedResponse.getFeeds().size(); i++) {
-                if (feedResponse.getFeeds().get(i).getUser_name().equals(limit))
+                if (feedResponse.getFeeds().get(i).getUser_name().equals(name))
+                    mFeeds.add(feedResponse.getFeeds().get(i));
+            }
+            feedResponse.setFeeds(mFeeds);
+            return;
+        }
+        if (ignored != null) {
+            Log.d(TAG, "getLimit: ignored");
+            List<Feed> mFeeds = new ArrayList<>();
+            for (int i = 0; i < feedResponse.getFeeds().size(); i++) {
+                if (feedResponse.getFeeds().get(i).getUser_name().equals(ignored))
                     continue;
                 mFeeds.add(feedResponse.getFeeds().get(i));
             }

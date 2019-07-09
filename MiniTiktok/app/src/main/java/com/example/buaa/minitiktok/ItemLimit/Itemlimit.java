@@ -29,8 +29,11 @@ import java.util.Map;
 public class Itemlimit extends AppCompatActivity {
 
     private static int REQUEST_CODE_STORAGE_PERMISSION = 1001;
-    private static final String fileName = "test.txt";
-    private static String limit = null;
+    private static final String ignored_fileName = "ignored.txt";
+    private static final String onlyyou_fileName = "your_name.txt";
+    private static String ignored = null;
+    private static String name = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,21 +41,37 @@ public class Itemlimit extends AppCompatActivity {
 
         setTitle(R.string.Limit);
         final Button limitBtn = findViewById(R.id.btn_add);
-        final TextView limitText = findViewById(R.id.edit_text);
+        final TextView ignoredText = findViewById(R.id.edit_text);
+        final TextView ignored_name = findViewById(R.id.ignored_name);
+        final TextView only_youText = findViewById(R.id.edit_text1);
+        final TextView your_name = findViewById(R.id.your_name);
+        final Button clearbtn = findViewById(R.id.btn_clear);
+        ignored = ReadFile(ignored_fileName);
+        ignored_name.setText(ignored);
+        name = ReadFile(onlyyou_fileName);
+        your_name.setText(name);
         limitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CharSequence content = limitText.getText();
-                if (TextUtils.isEmpty(content)) {
+                CharSequence ignored_content = ignoredText.getText();
+                CharSequence only_content = only_youText.getText();
+                if (TextUtils.isEmpty(ignored_content) && TextUtils.isEmpty(only_content)) {
                     Toast.makeText(Itemlimit.this,
                             "No content to limit", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                boolean succeed = Limit_Video(content.toString().trim());
+                boolean succeed = false;
+                if (!TextUtils.isEmpty(ignored_content)) {
+                    succeed = WriteFile(ignored_content.toString().trim(), ignored_fileName);
+                    ignored = ReadFile(ignored_fileName);
+                }
+                if (!TextUtils.isEmpty(only_content)) {
+                    succeed = WriteFile(only_content.toString().trim(), onlyyou_fileName);
+                    name = ReadFile(onlyyou_fileName);
+                }
                 if (succeed) {
                     Toast.makeText(Itemlimit.this,
-                            "Note added", Toast.LENGTH_SHORT).show();
-                    limit = ReadFile();
+                            "limit added", Toast.LENGTH_SHORT).show();
                     setResult(Activity.RESULT_OK);
                 } else {
                     Toast.makeText(Itemlimit.this,
@@ -62,9 +81,15 @@ public class Itemlimit extends AppCompatActivity {
             }
         });
 
+        clearbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+            }
+        });
     }
 
-    public String ReadFile() {
+    public String ReadFile(String fileName) {
         FileInputStream inputStream;
         String read = null;
         try {
@@ -79,9 +104,10 @@ public class Itemlimit extends AppCompatActivity {
         return read;
     }
 
-    public boolean WriteFile(String content) {
+    public boolean WriteFile(String content,String fileName) {
+        if (content == null || fileName == null)
+            return false;
         try {
-
             FileOutputStream writefile = this.openFileOutput(fileName, MODE_PRIVATE);//获得FileOutputStream
             byte[]  bytes = content.getBytes();
             writefile.write(bytes);//将byte数组写入文件
@@ -124,7 +150,7 @@ public class Itemlimit extends AppCompatActivity {
         }
     }
 
-    private String getInternalPath() {
+    /*private String getInternalPath() {
         Map<String, File> dirMap = new LinkedHashMap<>();
         dirMap.put("cacheDir", getCacheDir());
         dirMap.put("filesDir", getFilesDir());
@@ -162,12 +188,12 @@ public class Itemlimit extends AppCompatActivity {
         }
         return sb.toString();
     }
+*/
 
-    public boolean Limit_Video(String limiticontent) {
-        return WriteFile(limiticontent);
+    public static String getIgnored() {
+        return ignored;
     }
-
-    public static String getLimitString() {
-        return limit;
+    public static String getName() {
+        return name;
     }
 }
